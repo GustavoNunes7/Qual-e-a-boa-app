@@ -1,14 +1,9 @@
-// =====================================
+// ===================================== //
 // index.js - Qual é a boa?
-// =====================================
+// ===================================== //
 
-// ETAPA INICIAL - TRAZER A FERRAMENTAS (import)
+// ETAPA INICIAL - TRAZER AS FERRAMENTAS (import)
 import { useState, useEffect } from "react";
-// View -> uma caixa, serve para agrupar e organizar as coisas
-// Text -> Todo texto precisa estar dentro de um <text>
-// TextInput -> um campo para digitar
-// pressable -> qualquer coisa que dá pra tocar: nosso botão
-// StyleSheet -> ferramenta pra escrever os estilos.
 import {
   View,
   Text,
@@ -22,14 +17,13 @@ import { Accelerometer } from "expo-sensors";
 import * as Haptics from "expo-haptics";
 
 const LIMITE_DE_FORCA = 1.8;
-const TEMPO_ENTRE_SORTEIOS = 1000; //milissegundos: 1000 = 1 segundo
+const TEMPO_ENTRE_SORTEIOS = 1000; // milissegundos: 1000 = 1 segundo
 
 // ETAPA 01 - CRIAR A TELA
-
 export default function Home() {
-  //começa com 3 opçoes para já ter o que sortear
+  // começa com 3 opções para já ter o que sortear
   const [opcoes, setOpcoes] = useState(["Pizza", "Hambúrger", "Sushi"]);
-  // A opção que foi sorteada. Começa vazia ("")porque ainda não sorteou
+  // A opção que foi sorteada. Começa vazia ("") porque ainda não sorteou
   const [resultado, setResultado] = useState("");
   // O que a pessoa está digitando no campo. neste caso começa vazio.
   const [textoDigitado, setTextoDigitado] = useState("");
@@ -37,34 +31,23 @@ export default function Home() {
   // FUNÇÃO SORTEAR
   function sortear() {
     if (opcoes.length < 2) {
-      setResultado("Adcione pelo menos 2 opções!");
+      setResultado("Adicione pelo menos 2 opções!");
       return;
     }
-
-    // Como sortear uma posição da lista:
-    // 1) Math.random() - número aleatórios entre 0 e 1
-    // 2) x opcoes.length - multiplica pelo tamanho da lista
-    // 3) Math.floor() - arredonda para Baixo
     const posicao = Math.floor(Math.random() * opcoes.length);
-
-    //opcoes[2] pega o item que está na posição 2 da lista
     const opcaoSorteada = opcoes[posicao];
-    setResultado(opcaoSorteada); //aqui ele guarda no useState a tela atualizada!
+    setResultado(opcaoSorteada);
 
-    //aqui faz o celular vibrar avisando que saiu o resultado
+    // faz o celular vibrar avisando que saiu o resultado
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }
 
-  //FUNÇÃO DE ADCIONAR UMA OPÇÃO
+  // FUNÇÃO DE ADICIONAR UMA OPÇÃO
   function adicionar() {
-    //trim: retira os espaços do fim e do começo
     const nome = textoDigitado.trim();
-
     if (nome === "") {
-      return; //campo vazio? ----> Não adiciona NADA!
+      return; // campo vazio? ----> Não adiciona NADA!
     }
-
-    // Aqui criamos uma nova lista, com tudo o que já tinha + o nome novo
     const listaNova = [...opcoes, nome];
     setOpcoes(listaNova);
     setTextoDigitado(""); // limpa o campo para digitar a próxima.
@@ -77,54 +60,29 @@ export default function Home() {
   }
 
   // SORTEAR AO CHACOALHAR
-  // Nós vamos usar aqui o useEffect, e o sensor
-  // useEffect = "faça isto DEPOIS que a tela aparecer"
-  // usamos para LIGAR o sensor, e para DELIGAR quando a tela sair
   useEffect(() => {
-    //aqui pede ao sensor para medir a cada 100 milisegundos (10x por segundo)
     Accelerometer.setUpdateInterval(100);
-
-    // Guarda a hora do ultimo sorteio, para não sortear 10 vezes
-    // Começa com zero (numca sorteou)
-    // let (e não const) porque este valor vai mudar
     let horaDoUltimoSorteio = 0;
 
-    //addlistener = "Me avise toda vez que o sensor medir algo novo"
-    //"dados" chega com as medidas: dados.x, dados.y e dados.z
     const sensor = Accelerometer.addListener((dados) => {
-      //math.hypot junta x, y e z num número só: a FORÇA TOTAL
       const forca = Math.hypot(dados.x, dados.y, dados.z);
       const agora = Date.now();
       const tempoPassado = agora - horaDoUltimoSorteio;
 
-      //1 - chacoalhou forte (forca maior que o limite)
-      //2 - ja passou tempo suficiente desde o ultimo sorteio
       if (forca > LIMITE_DE_FORCA && tempoPassado > TEMPO_ENTRE_SORTEIOS) {
         horaDoUltimoSorteio = agora;
         sortear();
       }
     });
-    // a função é devolvida aqui é a "LIMPEZA": roda quando a tela sai.
-    // Desliga o sensor (como apagar a luz ao sair do quarto)
+
     return () => sensor.remove();
-    //[opcoes] diz: "religue o sensor sempre que a lista mudar"
   }, [opcoes]);
 
-  // PARA REALIZAÇÃO DO TESTE npx expo start, depois pressione "a"
-  // https://dontpad.com.br/senai-dsii2sesi
-
-  //AGORA VAMOS COMEÇAR A DESENHA A TELA --> JSX
-  //
-
+  // DESENHAR A TELA --> JSX
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.conteudo}
-    >
+    <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>
       <Text style={styles.titulo}>Qual é a boa? 🎲</Text>
       <Text style={styles.subtitulo}>Monte a lista e chacoalhe o celular</Text>
-
-      {/* ============= INICIA AQUI */}
 
       <View style={styles.resultadoCard}>
         <Text style={styles.resultadoTexto}>
@@ -138,15 +96,15 @@ export default function Home() {
       </Pressable>
 
       {/* TITULO DA LISTA */}
-      <Text style={styles.secaoBotao}>Opções ({opcoes.length})</Text>
+      <Text style={styles.secaoTitulo}>Opções ({opcoes.length})</Text>
 
       {/* CAMPO MAIS BOTÃO */}
       <View style={styles.linhaInput}>
         <TextInput
           style={styles.input}
-          value={textoDigitado} // o campo  SEMPRE mostra o que esrá guardado
-          onChangeText={setTextoDigitado} // a cada letra, guarda o useState
-          onSubmitEditing={adicionar} // tecla ok/enter do teclado também funciona
+          value={textoDigitado}
+          onChangeText={setTextoDigitado}
+          onSubmitEditing={adicionar}
           placeholder="Digite uma opção..."
           placeholderTextColor={cores.textoSecundario}
         />
@@ -168,22 +126,101 @@ export default function Home() {
 }
 
 // ===============================================================================
-//  ESTILOS
+// ESTILOS
 // ===============================================================================
-
 const styles = StyleSheet.create({
-  // Tela toda
-  container: { flex: 1, backgroundColor: cores.fundo },
-  conteudo: { padding: 20, paddingTop: 60, paddingBottom: 40 },
-  titulo: { fontSize: 30, fontWeight: "bold", color: cores.textoPrincipal },
-  subtitulo: { fontSize: 15, color: cores.textoSecundario, marginTop: 4, marginBottom: 24 },
-
+  container: { 
+    flex: 1, 
+    backgroundColor: cores.fundo 
+  },
+  conteudo: { 
+    padding: 20, 
+    paddingTop: 60, 
+    paddingBottom: 40 
+  },
+  titulo: { 
+    fontSize: 30, 
+    fontWeight: "bold", 
+    color: cores.textoPrincipal 
+  },
+  subtitulo: { 
+    fontSize: 15, 
+    color: cores.textoSecundario, 
+    marginTop: 4, 
+    marginBottom: 24 
+  },
+  resultadoCard: {
+    backgroundColor: cores.fundoCard,
+    borderColor: cores.roxo,
+    borderWidth: 2,
+    borderRadius: 16,
+    paddingVertical: 40,
+    paddingHorizontal: 16,
+    alignItems: "center",
+  },
+  resultadoTexto: {
+    fontSize: 32, // CORRIGIDO AQUI (estava fontSize32:32)
+    fontWeight: "bold",
+    color: cores.textoPrincipal,
+    textAlign: "center",
+  },
+  botaoSortear: {
+    backgroundColor: cores.roxo,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    alignItems: "center",
+    marginTop: 16,
+  },
+  textBotao: { 
+    color: cores.textoPrincipal, 
+    fontSize: 16, 
+    fontWeight: "bold" 
+  },
+  secaoTitulo: { // CORRIGIDO AQUI (no JSX você chamou secaoTitulo, mas na folha estava secaoBotao)
+    fontSize: 18,
+    fontWeight: "bold",
+    color: cores.textoPrincipal,
+    marginTop: 32,
+    marginBottom: 12,
+  },
+  item: {
+    backgroundColor: cores.fundoCard,
+    borderColor: cores.borda,
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  itemTexto: { 
+    color: cores.textoPrincipal, 
+    fontSize: 16 
+  },
+  linhaInput: { 
+    flexDirection: "row", 
+    gap: 8, 
+    marginBottom: 12 
+  },
+  input: {
+    flex: 1,
+    backgroundColor: cores.fundoCard,
+    color: cores.textoPrincipal,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    fontSize: 16,
+  },
+  botaoAdd: {
+    backgroundColor: cores.verde,
+    borderRadius: 12,
+    width: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  remover: { 
+    color: cores.textoSecundario, 
+    fontSize: 18 
+  },
 });
-
-// const styles = StyleSheet.create({
-//     container: { flex: 1, backgroundColor: cores.fundo },
-//     conteudo: { padding: 20, paddingTop: 60, paddingBottom: 40 },
-
-//     titulo: { fontSize: 30, fontWeight: "bold", color: cores.textoPrincipal },
-//     subtitulo: { fontSize: 15, color: cores.textoSecundario, marginTop: 4, marginBottom: 24 },
-// });

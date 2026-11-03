@@ -30,8 +30,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "0dada564-8a59-49bd-80af-c262178c0887"
+        "projectId": "53baebad-5284-485e-a9c8-34bf3667afa7"
       }
-    }
+    },
+    "owner": "gununes7"
   }
 }
