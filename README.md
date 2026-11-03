@@ -145,4 +145,8 @@ Quando o processo terminar, será possível acessar o arquivo gerado e realizar 
 
 ---
 
+<<<<<<< HEAD
 **Projeto: Qual é a Boa?** 🚀
+=======
+**Projeto: Qual é a Boa?** 🚀
+>>>>>>> a70c512638c990f54f7b678e148af1d46bd09757
